@@ -1,160 +1,145 @@
 # PyTorch Tutorials
 
-A comprehensive collection of tutorials covering essential PyTorch concepts and applications.
-
-## Overview
-
-This repository contains a series of tutorials designed to help you learn PyTorch from the ground up. Each tutorial includes detailed explanations, code examples, and practical applications. The tutorials are structured to progress from basic concepts to advanced techniques, making it suitable for beginners and experienced practitioners alike.
+A comprehensive collection of tutorials covering PyTorch from beginner to expert level. This repository aims to provide practical, hands-on examples and explanations for various PyTorch concepts and applications.
 
 ## Table of Contents
 
-### Fundamentals
+### Beginner Level
 1. [PyTorch Basics](01_pytorch_basics/README.md)
-   - Tensors, operations, and computational graphs
-   - NumPy integration
-   - GPU acceleration
+   - Tensors, operations, NumPy integration, GPU acceleration, computational graphs
+   
+2. Neural Networks Fundamentals
+   - Linear layers, activation functions, loss functions, optimizers
+   - Building your first neural network
+   - Forward and backward propagation
 
-2. [Autograd and Optimization](02_autograd_optimization/README.md)
-   - Automatic differentiation
-   - Gradient computation
-   - Optimizers (SGD, Adam, etc.)
+3. Automatic Differentiation
+   - Autograd mechanics
+   - Computing gradients
+   - Custom autograd functions
 
-3. [Neural Network Basics](03_neural_network_basics/README.md)
-   - Linear layers
-   - Activation functions
-   - Building a simple neural network
-   - nn.Module and nn.Sequential
+4. Training Neural Networks
+   - Training loop implementation
+   - Validation techniques
+   - Hyperparameter tuning
+   - Learning rate scheduling
 
-### Data Handling
-4. [Data Loading and Processing](04_data_loading/README.md)
-   - Dataset and DataLoader
-   - Transforms and augmentation
+5. Data Loading and Preprocessing
+   - Dataset and DataLoader classes
    - Custom datasets
-   - Batch processing
+   - Data transformations and augmentation
+   - Efficient data loading techniques
 
-5. [Data Preprocessing](05_data_preprocessing/README.md)
-   - Normalization techniques
-   - Feature scaling
-   - One-hot encoding
-   - Handling missing data
-
-### Computer Vision
-6. [Convolutional Neural Networks](06_convolutional_networks/README.md)
-   - CNN architecture
-   - Convolution, pooling, and fully connected layers
-   - Image classification
+### Intermediate Level
+6. Convolutional Neural Networks
+   - CNN architecture components
+   - Image classification with CNNs
    - Transfer learning with pre-trained models
+   - Feature visualization
 
-7. [Computer Vision Applications](07_computer_vision_applications/README.md)
-   - Object detection
-   - Semantic segmentation
-   - Instance segmentation
-   - Image generation
-
-### Natural Language Processing
-8. [Recurrent Neural Networks](08_recurrent_networks/README.md)
-   - RNN architecture
-   - LSTM and GRU
+7. Recurrent Neural Networks
+   - RNN, LSTM, and GRU implementations
    - Sequence modeling
-   - Text classification
+   - Text generation
+   - Time series forecasting
 
-9. [Transformers and Attention](09_transformers_attention/README.md)
-   - Self-attention mechanism
+8. Transformers and Attention Mechanisms
+   - Self-attention and multi-head attention
    - Transformer architecture
-   - BERT and GPT models
-   - Fine-tuning pre-trained language models
+   - BERT and GPT model implementations
+   - Fine-tuning pre-trained transformers
 
-### Advanced Topics
-10. [Generative Models](10_generative_models/README.md)
-    - Variational Autoencoders (VAEs)
-    - Generative Adversarial Networks (GANs)
-    - Diffusion models
-    - Style transfer
+9. Generative Models
+   - Autoencoders
+   - Variational Autoencoders (VAEs)
+   - Generative Adversarial Networks (GANs)
+   - Diffusion models
 
-11. [Reinforcement Learning](11_reinforcement_learning/README.md)
-    - Policy gradients
-    - Deep Q-Networks (DQN)
-    - Actor-Critic methods
-    - PyTorch integration with RL environments
-
-12. [Model Optimization](12_model_optimization/README.md)
-    - Quantization
-    - Pruning
-    - Knowledge distillation
-    - Mixed precision training
-
-### Deployment and Production
-13. [Model Deployment](13_model_deployment/README.md)
-    - TorchScript
+10. Model Deployment
+    - TorchScript and tracing
     - ONNX export
-    - Mobile deployment
-    - Web deployment
+    - Quantization
+    - Mobile deployment (PyTorch Mobile)
+    - Web deployment (ONNX.js)
 
-14. [Distributed Training](14_distributed_training/README.md)
-    - Data parallelism
-    - Model parallelism
-    - DistributedDataParallel
-    - Multi-GPU training
-
-15. [PyTorch Lightning](15_pytorch_lightning/README.md)
+11. PyTorch Lightning
     - Lightning modules
     - Trainers and callbacks
-    - Logging and checkpointing
-    - Hyperparameter tuning
+    - Multi-GPU training
+    - Experiment logging
 
-## Requirements
+### Advanced Level
+12. Distributed Training
+    - Data parallelism
+    - Model parallelism
+    - Distributed Data Parallel (DDP)
+    - Sharded training
 
-- Python 3.8+
-- PyTorch 2.0+
-- torchvision
-- torchaudio (for audio tutorials)
-- matplotlib
-- numpy
-- pandas
-- scikit-learn
-- Jupyter Notebook/Lab
+13. Custom Extensions
+    - C++ extensions
+    - CUDA extensions
+    - Custom operators
+    - JIT compilation
 
-You can install the required packages using:
+14. Performance Optimization
+    - Memory optimization
+    - Mixed precision training
+    - Profiling and benchmarking
+    - Bottleneck identification
 
-```bash
-pip install -r requirements.txt
-```
+15. Advanced Model Architectures
+    - Graph Neural Networks
+    - Vision Transformers
+    - MLP-Mixers
+    - Neural ODEs
+
+16. Reinforcement Learning
+    - Policy gradients
+    - Deep Q-Networks
+    - Actor-Critic methods
+    - PPO implementation
+
+17. Meta-Learning and Few-Shot Learning
+    - MAML implementation
+    - Prototypical networks
+    - Metric-based approaches
+    - Meta-optimization
+
+### Expert Level
+18. Neural Architecture Search
+    - Differentiable architecture search
+    - Evolutionary algorithms
+    - Reinforcement learning for architecture search
+    - Weight sharing techniques
+
+19. Bayesian Deep Learning
+    - Bayesian Neural Networks
+    - Variational inference
+    - Monte Carlo Dropout
+    - Uncertainty estimation
+
+20. Advanced Research Topics
+    - Self-supervised learning
+    - Contrastive learning
+    - Energy-based models
+    - Implicit neural representations
 
 ## Getting Started
 
-1. Clone this repository:
+### Prerequisites
+- Python 3.7+
+- PyTorch 1.10+
+- Additional requirements are listed in `requirements.txt`
+
+### Installation
 ```bash
 git clone https://github.com/niconielsen32/pytorch-tutorials.git
 cd pytorch-tutorials
-```
-
-2. Install the requirements:
-```bash
 pip install -r requirements.txt
 ```
 
-3. Navigate to any tutorial directory and open the Jupyter notebooks or Python scripts.
-
-## How to Use This Repository
-
-Each tutorial directory contains:
-- A README.md file with explanations and theory
-- Jupyter notebooks with code examples
-- Python scripts for standalone execution
-- Sample data or instructions to download datasets
-
-You can follow the tutorials sequentially for a comprehensive learning experience or jump to specific topics based on your interests and needs.
-
 ## Contributing
-
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- PyTorch team for the amazing framework
-- The deep learning community for continuous innovation
-- All contributors to this repository
+This project is licensed under the MIT License - see the LICENSE file for details.
