@@ -1,6 +1,6 @@
 # PyTorch Basics
 
-This tutorial covers the fundamental concepts of PyTorch, including tensors, operations, and computational graphs.
+This tutorial covers the fundamental concepts of PyTorch, providing a foundation for deep learning applications.
 
 ## Table of Contents
 1. [Introduction to PyTorch](#introduction-to-pytorch)
@@ -9,6 +9,65 @@ This tutorial covers the fundamental concepts of PyTorch, including tensors, ope
 4. [NumPy Integration](#numpy-integration)
 5. [GPU Acceleration](#gpu-acceleration)
 6. [Computational Graphs](#computational-graphs)
+
+## Introduction to PyTorch
+
+- Overview of PyTorch as a deep learning framework
+- Key features and advantages
+- Installation and setup instructions
+
+## Tensors
+
+- Creating tensors
+- Tensor types and shapes
+- Tensor initialization methods
+- Converting between data types
+
+## Tensor Operations
+
+- Element-wise operations
+- Matrix operations
+- Reshaping and indexing
+- Broadcasting
+
+## NumPy Integration
+
+- Converting between PyTorch tensors and NumPy arrays
+- Shared memory considerations
+- Practical examples of integration
+
+## GPU Acceleration
+
+- Checking GPU availability
+- Moving tensors to GPU
+- Basic operations on GPU
+- Performance considerations
+
+## Computational Graphs
+
+- Understanding dynamic computational graphs
+- Graph visualization
+- Basic autograd operations
+
+## Running the Tutorial
+
+To run this tutorial:
+
+```bash
+python pytorch_basics.py
+```
+
+Alternatively, you can follow along with the Jupyter notebook `pytorch_basics.ipynb` for an interactive experience.
+
+## Prerequisites
+
+- Python 3.7+
+- PyTorch 1.10+
+
+## Related Tutorials
+
+1. [Neural Networks Fundamentals](../02_neural_networks_fundamentals/README.md)
+2. [Automatic Differentiation](../03_automatic_differentiation/README.md)
 
 ## Introduction to PyTorch
 

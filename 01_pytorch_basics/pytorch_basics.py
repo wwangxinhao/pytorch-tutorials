@@ -1,303 +1,260 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
 PyTorch Basics
---------------
-This script demonstrates the fundamental concepts of PyTorch, including tensors,
-operations, NumPy integration, GPU acceleration, and computational graphs.
+
+This script provides an introduction to PyTorch, covering tensors, operations,
+and basic computational graphs.
 """
 
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
+# Set random seed for reproducibility
+torch.manual_seed(42)
 
-def tensor_creation_examples():
-    """Examples of creating tensors in PyTorch."""
-    print("\n" + "="*50)
-    print("TENSOR CREATION EXAMPLES")
-    print("="*50)
-    
-    # Create a tensor from a Python list
-    x = torch.tensor([1, 2, 3, 4])
-    print("Tensor from list:", x)
-    
-    # Create a 2D tensor (matrix)
-    matrix = torch.tensor([[1, 2], [3, 4]])
-    print("\nMatrix:")
-    print(matrix)
-    
-    # Create tensors with specific data types
-    float_tensor = torch.tensor([1.0, 2.0, 3.0], dtype=torch.float32)
-    int_tensor = torch.tensor([1, 2, 3], dtype=torch.int64)
-    print("\nFloat tensor:", float_tensor)
-    print("Integer tensor:", int_tensor)
-    
-    # Create tensors with specific shapes
-    zeros = torch.zeros(3, 4)
-    ones = torch.ones(2, 3)
-    rand = torch.rand(2, 2)
-    randn = torch.randn(2, 2)
-    
-    print("\nZeros tensor:")
-    print(zeros)
-    print("\nOnes tensor:")
-    print(ones)
-    print("\nRandom uniform tensor:")
-    print(rand)
-    print("\nRandom normal tensor:")
-    print(randn)
-    
-    # Create a tensor with a specific range
-    range_tensor = torch.arange(0, 10, step=1)
-    linspace = torch.linspace(0, 1, steps=5)
-    print("\nRange tensor:", range_tensor)
-    print("Linspace tensor:", linspace)
-    
-    # Create an identity matrix
-    eye = torch.eye(3)
-    print("\nIdentity matrix:")
-    print(eye)
+# Device configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
 
+# -----------------------------------------------------------------------------
+# Section 1: Introduction to PyTorch
+# -----------------------------------------------------------------------------
 
-def tensor_attributes_examples():
-    """Examples of tensor attributes in PyTorch."""
-    print("\n" + "="*50)
-    print("TENSOR ATTRIBUTES EXAMPLES")
-    print("="*50)
-    
-    x = torch.randn(3, 4, 5)
-    
-    print("Tensor shape:", x.shape)
-    print("Tensor size:", x.size())
-    print("Number of dimensions:", x.dim())
-    print("Data type:", x.dtype)
-    print("Device:", x.device)
+def intro_to_pytorch():
+    """Introduce basic PyTorch concepts and features."""
+    print("Introduction to PyTorch")
+    print("-" * 50)
+    print("PyTorch is an open-source machine learning library for Python.")
+    print("Key features include:")
+    print("  - Tensor computation with strong GPU acceleration")
+    print("  - Dynamic neural networks")
+    print("  - Automatic differentiation for deep learning")
+    print(f"PyTorch version: {torch.__version__}")
+    if torch.cuda.is_available():
+        print(f"CUDA version: {torch.version.cuda}")
 
+# -----------------------------------------------------------------------------
+# Section 2: Tensors
+# -----------------------------------------------------------------------------
 
-def tensor_indexing_examples():
-    """Examples of tensor indexing and slicing in PyTorch."""
-    print("\n" + "="*50)
-    print("TENSOR INDEXING AND SLICING EXAMPLES")
-    print("="*50)
+def demonstrate_tensors():
+    """Demonstrate tensor creation and properties."""
+    print("\nTensors in PyTorch")
+    print("-" * 50)
     
-    x = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    print("Original tensor:")
-    print(x)
+    # Creating tensors
+    tensor_1d = torch.tensor([1, 2, 3, 4, 5])
+    tensor_2d = torch.tensor([[1, 2, 3], [4, 5, 6]])
+    print("1D Tensor:", tensor_1d)
+    print("2D Tensor:\n", tensor_2d)
     
-    # Indexing
-    print("\nIndexing:")
-    print("x[0, 0] =", x[0, 0])
-    print("x[1, 2] =", x[1, 2])
+    # Tensor properties
+    print("\nTensor Properties:")
+    print(f"Shape of 1D tensor: {tensor_1d.shape}")
+    print(f"Shape of 2D tensor: {tensor_2d.shape}")
+    print(f"Data type of 1D tensor: {tensor_1d.dtype}")
+    print(f"Device of 1D tensor: {tensor_1d.device}")
     
-    # Slicing
-    print("\nSlicing:")
-    print("First column:")
-    print(x[:, 0])
-    print("Second row:")
-    print(x[1, :])
-    print("Sub-matrix (top-right 2x2):")
-    print(x[0:2, 1:3])
+    # Different initialization methods
+    zeros_tensor = torch.zeros(3, 3)
+    ones_tensor = torch.ones(2, 4)
+    random_tensor = torch.randn(2, 3)
+    print("\nInitialization Methods:")
+    print("Zeros Tensor:\n", zeros_tensor)
+    print("Ones Tensor:\n", ones_tensor)
+    print("Random Tensor:\n", random_tensor)
     
-    # Advanced indexing
-    indices = torch.tensor([0, 2])
-    print("\nAdvanced indexing with indices [0, 2]:")
-    print(x[indices])
-    
-    # Boolean indexing
-    mask = x > 5
-    print("\nBoolean mask (x > 5):")
-    print(mask)
-    print("Elements where x > 5:")
-    print(x[mask])
+    # Converting data types
+    float_tensor = tensor_1d.float()
+    int_tensor = tensor_1d.int()
+    print("\nType Conversion:")
+    print(f"Original dtype: {tensor_1d.dtype}")
+    print(f"Float tensor dtype: {float_tensor.dtype}")
+    print(f"Int tensor dtype: {int_tensor.dtype}")
 
+# -----------------------------------------------------------------------------
+# Section 3: Tensor Operations
+# -----------------------------------------------------------------------------
 
-def tensor_operations_examples():
-    """Examples of tensor operations in PyTorch."""
-    print("\n" + "="*50)
-    print("TENSOR OPERATIONS EXAMPLES")
-    print("="*50)
+def demonstrate_tensor_operations():
+    """Demonstrate various tensor operations."""
+    print("\nTensor Operations")
+    print("-" * 50)
     
-    # Arithmetic operations
-    print("Arithmetic Operations:")
-    a = torch.tensor([1, 2, 3])
-    b = torch.tensor([4, 5, 6])
+    # Create sample tensors
+    a = torch.tensor([[1, 2], [3, 4]], dtype=torch.float)
+    b = torch.tensor([[5, 6], [7, 8]], dtype=torch.float)
     
-    print("a =", a)
-    print("b =", b)
-    print("a + b =", a + b)
-    print("a - b =", a - b)
-    print("a * b =", a * b)
-    print("a / b =", a / b)
+    # Element-wise operations
+    add_result = a + b
+    mul_result = a * b
+    print("Element-wise Operations:")
+    print("Addition:\n", add_result)
+    print("Multiplication:\n", mul_result)
     
     # Matrix operations
+    matmul_result = torch.matmul(a, b)
+    transpose = a.t()
     print("\nMatrix Operations:")
-    a = torch.tensor([[1, 2], [3, 4]])
-    b = torch.tensor([[5, 6], [7, 8]])
+    print("Matrix Multiplication:\n", matmul_result)
+    print("Transpose of a:\n", transpose)
     
-    print("Matrix a:")
-    print(a)
-    print("Matrix b:")
-    print(b)
-    print("Matrix multiplication (a @ b):")
-    print(a @ b)
-    print("Element-wise multiplication (a * b):")
-    print(a * b)
-    print("Transpose of a:")
-    print(a.t())
+    # Reshaping
+    reshape_result = a.view(4, 1)
+    print("\nReshaping:")
+    print("Original shape:", a.shape)
+    print("Reshaped tensor shape:", reshape_result.shape)
+    print("Reshaped tensor:\n", reshape_result)
     
-    # Reduction operations
-    print("\nReduction Operations:")
-    x = torch.tensor([[1, 2, 3], [4, 5, 6]])
-    print("Tensor x:")
-    print(x)
-    print("Sum of all elements:", torch.sum(x))
-    print("Sum along rows (dim=0):", x.sum(dim=0))
-    print("Sum along columns (dim=1):", x.sum(dim=1))
-    print("Mean of all elements:", torch.mean(x.float()))
-    print("Max of all elements:", torch.max(x))
+    # Indexing
+    element = a[0, 1]
+    row = a[0, :]
+    print("\nIndexing:")
+    print("Element at [0,1]:", element)
+    print("First row:", row)
     
-    # Reshaping operations
-    print("\nReshaping Operations:")
-    print("Original tensor x:")
-    print(x)
-    print("Reshape to (3, 2):")
-    print(x.reshape(3, 2))
-    print("View as (6, 1):")
-    print(x.view(6, 1))
-    print("Flatten:")
-    print(x.flatten())
+    # Broadcasting
+    scalar = torch.tensor(2.0)
+    broadcast_result = a + scalar
+    print("\nBroadcasting:")
+    print("Original tensor:\n", a)
+    print("After adding scalar 2.0:\n", broadcast_result)
 
+# -----------------------------------------------------------------------------
+# Section 4: NumPy Integration
+# -----------------------------------------------------------------------------
 
-def numpy_integration_examples():
-    """Examples of NumPy integration with PyTorch."""
-    print("\n" + "="*50)
-    print("NUMPY INTEGRATION EXAMPLES")
-    print("="*50)
+def demonstrate_numpy_integration():
+    """Demonstrate integration between PyTorch tensors and NumPy arrays."""
+    print("\nNumPy Integration")
+    print("-" * 50)
     
-    # NumPy array to PyTorch tensor
-    np_array = np.array([1, 2, 3])
-    tensor = torch.from_numpy(np_array)
-    print("NumPy array:", np_array)
-    print("PyTorch tensor from NumPy:", tensor)
+    # Convert NumPy array to tensor
+    np_array = np.array([[1, 2], [3, 4]])
+    tensor_from_np = torch.from_numpy(np_array)
+    print("NumPy array to Tensor:")
+    print("NumPy array:\n", np_array)
+    print("Tensor:\n", tensor_from_np)
     
-    # PyTorch tensor to NumPy array
-    tensor = torch.tensor([4, 5, 6])
-    np_array = tensor.numpy()
-    print("\nPyTorch tensor:", tensor)
-    print("NumPy array from tensor:", np_array)
+    # Convert tensor to NumPy array
+    tensor = torch.tensor([[5, 6], [7, 8]])
+    np_from_tensor = tensor.numpy()
+    print("\nTensor to NumPy array:")
+    print("Tensor:\n", tensor)
+    print("NumPy array:\n", np_from_tensor)
     
     # Shared memory demonstration
-    print("\nShared memory demonstration:")
-    np_array = np.array([1, 2, 3])
-    tensor = torch.from_numpy(np_array)
-    print("Original NumPy array:", np_array)
-    print("Original tensor:", tensor)
-    
-    np_array[0] = 5
-    print("Modified NumPy array:", np_array)
-    print("Tensor after NumPy modification:", tensor)
+    print("\nShared Memory Demonstration:")
+    np_array[0, 0] = 99
+    print("Modified NumPy array:\n", np_array)
+    print("Tensor (shares memory):\n", tensor_from_np)
 
+# -----------------------------------------------------------------------------
+# Section 5: GPU Acceleration
+# -----------------------------------------------------------------------------
 
-def gpu_acceleration_examples():
-    """Examples of GPU acceleration in PyTorch."""
-    print("\n" + "="*50)
-    print("GPU ACCELERATION EXAMPLES")
-    print("="*50)
+def demonstrate_gpu_acceleration():
+    """Demonstrate GPU usage with PyTorch."""
+    print("\nGPU Acceleration")
+    print("-" * 50)
     
-    # Check if CUDA is available
-    cuda_available = torch.cuda.is_available()
-    print("CUDA available:", cuda_available)
-    
-    # Create tensors on CPU or GPU
-    if cuda_available:
-        device = torch.device("cuda")
-        print("Using CUDA device")
+    if torch.cuda.is_available():
+        # Create tensor on CPU
+        cpu_tensor = torch.randn(1000, 1000)
+        print("CPU tensor device:", cpu_tensor.device)
         
-        # Create tensor directly on GPU
-        x_gpu = torch.tensor([1, 2, 3], device=device)
-        print("Tensor created on GPU:", x_gpu)
+        # Move tensor to GPU
+        gpu_tensor = cpu_tensor.to(device)
+        print("GPU tensor device:", gpu_tensor.device)
         
-        # Move tensor from CPU to GPU
-        x_cpu = torch.tensor([4, 5, 6])
-        x_gpu = x_cpu.to(device)
-        print("Tensor moved from CPU to GPU:", x_gpu)
+        # Perform operation on GPU
+        start_time = time.time()
+        result_gpu = torch.matmul(gpu_tensor, gpu_tensor)
+        gpu_time = time.time() - start_time
         
-        # Move tensor back to CPU
-        x_cpu_again = x_gpu.cpu()
-        print("Tensor moved back to CPU:", x_cpu_again)
+        # Perform same operation on CPU
+        start_time = time.time()
+        result_cpu = torch.matmul(cpu_tensor, cpu_tensor)
+        cpu_time = time.time() - start_time
+        
+        print(f"Matrix multiplication time on CPU: {cpu_time:.4f} seconds")
+        print(f"Matrix multiplication time on GPU: {gpu_time:.4f} seconds")
+        print(f"Speedup: {cpu_time/gpu_time:.2f}x")
     else:
-        print("CUDA not available. Using CPU only.")
-        device = torch.device("cpu")
-        x = torch.tensor([1, 2, 3])
-        print("Tensor on CPU:", x)
+        print("CUDA is not available. GPU demonstration skipped.")
+        print("To enable GPU acceleration, install CUDA and cuDNN.")
 
+# -----------------------------------------------------------------------------
+# Section 6: Computational Graphs
+# -----------------------------------------------------------------------------
 
-def computational_graph_examples():
-    """Examples of computational graphs in PyTorch."""
-    print("\n" + "="*50)
-    print("COMPUTATIONAL GRAPH EXAMPLES")
-    print("="*50)
+def demonstrate_computational_graphs():
+    """Demonstrate dynamic computational graphs and autograd."""
+    print("\nComputational Graphs")
+    print("-" * 50)
     
-    # Create tensors with requires_grad=True to track operations
+    # Create tensors with gradient tracking
     x = torch.tensor(2.0, requires_grad=True)
     y = torch.tensor(3.0, requires_grad=True)
     
-    print("x =", x)
-    print("y =", y)
-    
-    # Build a computational graph
-    z = x**2 + y**3
-    print("z = x^2 + y^3 =", z)
+    # Define a simple computation
+    z = x * y + x**2
+    print("Forward computation: z = x * y + x^2")
+    print(f"x = {x.item()}, y = {y.item()}")
+    print(f"z = {z.item()}")
     
     # Compute gradients
     z.backward()
+    print("\nGradients:")
+    print(f"dz/dx = {x.grad.item()} (should be y + 2x = {y.item() + 2*x.item()})")
+    print(f"dz/dy = {y.grad.item()} (should be x = {x.item()})")
     
-    # Access gradients
-    print("Gradient of z with respect to x (dz/dx):", x.grad)
-    print("Gradient of z with respect to y (dz/dy):", y.grad)
-    
-    # Gradient accumulation
-    print("\nGradient accumulation:")
-    
-    # Reset gradients
-    x.grad.zero_()
-    y.grad.zero_()
-    print("After zeroing gradients:")
-    print("x.grad =", x.grad)
-    print("y.grad =", y.grad)
-    
-    # Compute gradients multiple times
-    z = x**2 + y**3
-    z.backward()
-    print("After first backward pass:")
-    print("x.grad =", x.grad)
-    
-    z = x**2 + y**3
-    z.backward()
-    print("After second backward pass (gradients are accumulated):")
-    print("x.grad =", x.grad)
-    
-    # Detach a tensor from the graph
-    print("\nDetaching tensors:")
-    a = x.detach()
-    print("Detached tensor a =", a)
-    print("a.requires_grad =", a.requires_grad)
+    # Demonstrate a more complex graph
+    a = torch.tensor(1.0, requires_grad=True)
+    b = torch.tensor(2.0, requires_grad=True)
+    c = a + b
+    d = c * a
+    e = d + b**2
+    print("\nMore complex graph: e = (a + b) * a + b^2")
+    e.backward()
+    print("Gradients:")
+    print(f"de/da = {a.grad.item()}")
+    print(f"de/db = {b.grad.item()}")
 
+# -----------------------------------------------------------------------------
+# Main function to run all sections
+# -----------------------------------------------------------------------------
+
+import time
 
 def main():
-    """Main function to run all examples."""
+    """Main function to run all PyTorch basics tutorial sections."""
+    print("=" * 80)
     print("PyTorch Basics Tutorial")
-    print("Version:", torch.__version__)
+    print("=" * 80)
     
-    tensor_creation_examples()
-    tensor_attributes_examples()
-    tensor_indexing_examples()
-    tensor_operations_examples()
-    numpy_integration_examples()
-    gpu_acceleration_examples()
-    computational_graph_examples()
+    # Section 1: Introduction
+    intro_to_pytorch()
+    
+    # Section 2: Tensors
+    demonstrate_tensors()
+    
+    # Section 3: Tensor Operations
+    demonstrate_tensor_operations()
+    
+    # Section 4: NumPy Integration
+    demonstrate_numpy_integration()
+    
+    # Section 5: GPU Acceleration
+    demonstrate_gpu_acceleration()
+    
+    # Section 6: Computational Graphs
+    demonstrate_computational_graphs()
+    
+    print("\nTutorial complete!")
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

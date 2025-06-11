@@ -1,582 +1,445 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Neural Networks Fundamentals in PyTorch
+
+This script provides a comprehensive introduction to neural networks, covering basic concepts,
+activation functions, multi-layer perceptrons, loss functions, optimizers, and building
+and training a simple neural network in PyTorch.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, Dataset
+# torchvision can be used for datasets like MNIST, but for this fundamental script,
+# we'll use synthetic data or simple tensors to keep dependencies minimal.
+# import torchvision
+# import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, TensorDataset # Using TensorDataset for simple examples
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-def linear_layer_example():
-    """
-    Demonstrates the usage of linear layers in PyTorch.
-    """
-    print("\n=== Linear Layer Example ===")
-    
-    # Define a linear layer
-    linear = nn.Linear(in_features=10, out_features=5)
-    
-    # Input tensor
-    x = torch.randn(3, 10)  # Batch size of 3, input dimension of 10
-    
-    # Forward pass
-    output = linear(x)  # Shape: [3, 5]
-    
-    # Access weights and biases
-    print(f"Input shape: {x.shape}")
-    print(f"Output shape: {output.shape}")
-    print(f"Weight shape: {linear.weight.shape}")  # Shape: [5, 10]
-    print(f"Bias shape: {linear.bias.shape}")      # Shape: [5]
-    
-    # Multiple linear layers
-    model = nn.Sequential(
-        nn.Linear(10, 20),
-        nn.ReLU(),
-        nn.Linear(20, 15),
-        nn.ReLU(),
-        nn.Linear(15, 5)
-    )
-    
-    # Forward pass through multiple layers
-    output = model(x)
-    print(f"Output shape after multiple layers: {output.shape}")  # Shape: [3, 5]
+# Set random seed for reproducibility
+torch.manual_seed(42)
+np.random.seed(42)
 
-def activation_functions_example():
-    """
-    Demonstrates various activation functions in PyTorch.
-    """
-    print("\n=== Activation Functions Example ===")
+# Device configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
+
+# Create output directory if it doesn't exist
+output_dir = "02_neural_networks_fundamentals_outputs"
+os.makedirs(output_dir, exist_ok=True)
+
+# -----------------------------------------------------------------------------
+# Section 1: Introduction to Neural Networks
+# (Conceptual, covered in README.md)
+# -----------------------------------------------------------------------------
+
+def intro_to_neural_networks_concepts():
+    """Prints a summary of Neural Network concepts (mainly for script flow)."""
+    print("\nSection 1: Introduction to Neural Networks")
+    print("-" * 70)
+    print("Key Concepts (Detailed in README.md):")
+    print("  - What is a Neural Network? Biological Inspiration.")
+    print("  - Basic Components: Neurons, Weights, Biases, Layers.")
+    print("  - Types of Neural Networks (FNNs, CNNs, RNNs). Focus here: FNNs/MLPs.")
+
+# -----------------------------------------------------------------------------
+# Section 2: The Perceptron: The Simplest Neural Network
+# (Conceptual, covered in README.md, a simple version is part of activation demo)
+# -----------------------------------------------------------------------------
+
+def demonstrate_perceptron_concept():
+    """Illustrates a simple perceptron with a step-like activation (sigmoid)."""
+    print("\nSection 2: The Perceptron: The Simplest Neural Network")
+    print("-" * 70)
+    print("A single-layer perceptron is the most basic neural network.")
+    print("It computes a weighted sum of inputs, adds a bias, and passes it through an activation function.")
     
-    # Input tensor
-    x = torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
-    print(f"Input: {x}")
+    # Example: A perceptron with 2 inputs
+    perceptron_layer = nn.Linear(2, 1).to(device) # 2 input features, 1 output feature
+    sample_input = torch.tensor([0.5, -1.0], device=device) # Example input
+    weighted_sum = perceptron_layer(sample_input)
+    # Typically, a step function was used historically. Here we use sigmoid for a softer step.
+    output = torch.sigmoid(weighted_sum)
     
-    # ReLU
-    relu_output = F.relu(x)
-    print(f"ReLU: {relu_output}")
+    print(f"Sample input: {sample_input.cpu().numpy()}")
+    print(f"Perceptron layer weights: {perceptron_layer.weight.data.cpu().numpy()}")
+    print(f"Perceptron layer bias: {perceptron_layer.bias.data.cpu().numpy()}")
+    print(f"Weighted sum + bias: {weighted_sum.item():.4f}")
+    print(f"Output after sigmoid (acting as a soft step): {output.item():.4f}")
+    print("A single-layer perceptron can only solve linearly separable problems.")
+
+# -----------------------------------------------------------------------------
+# Section 3: Activation Functions
+# -----------------------------------------------------------------------------
+
+def demonstrate_activation_functions():
+    """Demonstrates and plots common activation functions."""
+    print("\nSection 3: Activation Functions")
+    print("-" * 70)
+    print("Activation functions introduce non-linearity, enabling networks to learn complex patterns.")
+    
+    x_vals = torch.linspace(-6, 6, 100) # Input values for plotting
     
     # Sigmoid
-    sigmoid_output = torch.sigmoid(x)
-    print(f"Sigmoid: {sigmoid_output}")
+    sigmoid_fn = nn.Sigmoid()
+    y_sigmoid = sigmoid_fn(x_vals)
     
     # Tanh
-    tanh_output = torch.tanh(x)
-    print(f"Tanh: {tanh_output}")
-    
-    # Leaky ReLU
-    leaky_relu_output = F.leaky_relu(x, negative_slope=0.01)
-    print(f"Leaky ReLU: {leaky_relu_output}")
-    
-    # Softmax
-    softmax_output = F.softmax(x, dim=0)
-    print(f"Softmax: {softmax_output}")
-    print(f"Sum of Softmax outputs: {softmax_output.sum()}")  # Should be 1
-    
-    # Visualize activation functions
-    plt.figure(figsize=(12, 8))
-    
-    # Generate data for plotting
-    x_range = torch.linspace(-5, 5, 100)
+    tanh_fn = nn.Tanh()
+    y_tanh = tanh_fn(x_vals)
     
     # ReLU
-    plt.subplot(2, 3, 1)
-    plt.plot(x_range, F.relu(x_range))
-    plt.grid(True)
-    plt.title('ReLU')
-    
-    # Sigmoid
-    plt.subplot(2, 3, 2)
-    plt.plot(x_range, torch.sigmoid(x_range))
-    plt.grid(True)
-    plt.title('Sigmoid')
-    
-    # Tanh
-    plt.subplot(2, 3, 3)
-    plt.plot(x_range, torch.tanh(x_range))
-    plt.grid(True)
-    plt.title('Tanh')
+    relu_fn = nn.ReLU()
+    y_relu = relu_fn(x_vals)
     
     # Leaky ReLU
-    plt.subplot(2, 3, 4)
-    plt.plot(x_range, F.leaky_relu(x_range, negative_slope=0.1))
-    plt.grid(True)
-    plt.title('Leaky ReLU (slope=0.1)')
+    leaky_relu_fn = nn.LeakyReLU(negative_slope=0.1)
+    y_leaky_relu = leaky_relu_fn(x_vals)
     
-    # ELU
-    plt.subplot(2, 3, 5)
-    plt.plot(x_range, F.elu(x_range))
-    plt.grid(True)
-    plt.title('ELU')
+    # Softmax (applied to a sample batch of logits)
+    softmax_fn = nn.Softmax(dim=1)
+    sample_logits = torch.tensor([[1.0, -0.5, 2.0], [0.1, 0.5, 0.2]]) # Batch of 2, 3 classes
+    y_softmax = softmax_fn(sample_logits)
+    print(f"Sample Logits for Softmax:\n{sample_logits}")
+    print(f"Softmax Output:\n{y_softmax}")
+
+    # Plotting
+    plt.figure(figsize=(15, 10))
     
-    # SELU
-    plt.subplot(2, 3, 6)
-    plt.plot(x_range, F.selu(x_range))
-    plt.grid(True)
-    plt.title('SELU')
+    plt.subplot(2, 2, 1)
+    plt.plot(x_vals.numpy(), y_sigmoid.numpy(), label='Sigmoid')
+    plt.title('Sigmoid: 1 / (1 + exp(-x))')
+    plt.xlabel('x'); plt.ylabel('f(x)'); plt.grid(True); plt.legend()
+    
+    plt.subplot(2, 2, 2)
+    plt.plot(x_vals.numpy(), y_tanh.numpy(), label='Tanh')
+    plt.title('Tanh: (exp(x) - exp(-x)) / (exp(x) + exp(-x))')
+    plt.xlabel('x'); plt.ylabel('f(x)'); plt.grid(True); plt.legend()
+
+    plt.subplot(2, 2, 3)
+    plt.plot(x_vals.numpy(), y_relu.numpy(), label='ReLU')
+    plt.title('ReLU: max(0, x)')
+    plt.xlabel('x'); plt.ylabel('f(x)'); plt.grid(True); plt.legend()
+    
+    plt.subplot(2, 2, 4)
+    plt.plot(x_vals.numpy(), y_leaky_relu.numpy(), label='Leaky ReLU (slope=0.1)')
+    plt.title('Leaky ReLU: max(0.1*x, x)')
+    plt.xlabel('x'); plt.ylabel('f(x)'); plt.grid(True); plt.legend()
     
     plt.tight_layout()
-    plt.savefig('activation_functions.png')
-    print("Activation functions visualization saved as 'activation_functions.png'")
+    plot_path = os.path.join(output_dir, 'activation_functions_plot.png')
+    plt.savefig(plot_path)
+    plt.close()
+    print(f"Activation functions plot saved to '{plot_path}'")
 
-def loss_functions_example():
-    """
-    Demonstrates various loss functions in PyTorch.
-    """
-    print("\n=== Loss Functions Example ===")
-    
-    # MSE Loss
-    mse_loss = nn.MSELoss()
-    predictions = torch.tensor([0.5, 1.5, 2.5])
-    targets = torch.tensor([1.0, 2.0, 3.0])
-    mse_output = mse_loss(predictions, targets)
-    print(f"MSE Loss: {mse_output.item()}")
-    
-    # Cross-Entropy Loss
-    ce_loss = nn.CrossEntropyLoss()
-    logits = torch.tensor([[0.1, 0.2, 0.7], [0.3, 0.5, 0.2]])  # Batch of 2, 3 classes
-    targets = torch.tensor([2, 1])  # Class indices
-    ce_output = ce_loss(logits, targets)
-    print(f"Cross-Entropy Loss: {ce_output.item()}")
-    
-    # Binary Cross-Entropy Loss
-    bce_loss = nn.BCEWithLogitsLoss()
-    predictions = torch.tensor([0.7, -0.2, 0.9])
-    targets = torch.tensor([1.0, 0.0, 1.0])
-    bce_output = bce_loss(predictions, targets)
-    print(f"Binary Cross-Entropy Loss: {bce_output.item()}")
-    
-    # L1 Loss (Mean Absolute Error)
-    l1_loss = nn.L1Loss()
-    l1_output = l1_loss(predictions, targets)
-    print(f"L1 Loss (MAE): {l1_output.item()}")
-    
-    # Smooth L1 Loss (Huber Loss)
-    smooth_l1_loss = nn.SmoothL1Loss()
-    smooth_l1_output = smooth_l1_loss(predictions, targets)
-    print(f"Smooth L1 Loss (Huber): {smooth_l1_output.item()}")
+# -----------------------------------------------------------------------------
+# Section 4: Multi-Layer Perceptrons (MLPs)
+# -----------------------------------------------------------------------------
 
-def optimizers_example():
-    """
-    Demonstrates various optimizers in PyTorch.
-    """
-    print("\n=== Optimizers Example ===")
-    
-    # Define a simple model
-    model = nn.Linear(10, 1)
-    
-    # Print initial parameters
-    print("Initial parameters:")
-    for name, param in model.named_parameters():
-        print(f"{name}: {param.data.mean().item():.4f} (mean)")
-    
-    # Create different optimizers
-    sgd_optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
-    adam_optimizer = optim.Adam(model.parameters(), lr=0.01, betas=(0.9, 0.999))
-    rmsprop_optimizer = optim.RMSprop(model.parameters(), lr=0.01, alpha=0.99)
-    adagrad_optimizer = optim.Adagrad(model.parameters(), lr=0.01)
-    
-    # Example of using an optimizer in a training loop
-    optimizer = adam_optimizer
-    print(f"\nTraining with Adam optimizer:")
-    for epoch in range(5):
-        # Forward pass (example)
-        inputs = torch.randn(32, 10)  # Batch of 32, input dimension of 10
-        targets = torch.randn(32, 1)  # Batch of 32, output dimension of 1
-        outputs = model(inputs)
-        loss = nn.MSELoss()(outputs, targets)
-        
-        # Backward pass and optimization
-        optimizer.zero_grad()  # Clear previous gradients
-        loss.backward()        # Compute gradients
-        optimizer.step()       # Update parameters
-        
-        print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
-    
-    # Print updated parameters
-    print("\nUpdated parameters:")
-    for name, param in model.named_parameters():
-        print(f"{name}: {param.data.mean().item():.4f} (mean)")
+class SimpleMLP(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(SimpleMLP, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size) # Input layer to hidden layer
+        self.relu1 = nn.ReLU()                        # Activation function for first hidden layer
+        self.fc2 = nn.Linear(hidden_size, hidden_size // 2) # Hidden layer to another smaller hidden layer
+        self.relu2 = nn.ReLU()                        # Activation for second hidden layer
+        self.fc3 = nn.Linear(hidden_size // 2, num_classes) # Final hidden layer to output layer
 
-class MLP(nn.Module):
-    """
-    Multi-Layer Perceptron (MLP) implementation.
-    """
-    def __init__(self, input_size, hidden_size, output_size, dropout_rate=0.2):
-        super(MLP, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
-        self.dropout = nn.Dropout(dropout_rate)
-        
     def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = F.relu(self.fc2(x))
-        x = self.dropout(x)
-        x = self.fc3(x)
-        return x
+        # x is the input tensor: [batch_size, input_size]
+        print(f"  MLP Forward - Input shape: {x.shape}")
+        out = self.fc1(x)
+        print(f"  MLP Forward - After fc1: {out.shape}")
+        out = self.relu1(out)
+        print(f"  MLP Forward - After relu1: {out.shape}")
+        out = self.fc2(out)
+        print(f"  MLP Forward - After fc2: {out.shape}")
+        out = self.relu2(out)
+        print(f"  MLP Forward - After relu2: {out.shape}")
+        out = self.fc3(out)
+        print(f"  MLP Forward - Output shape (logits): {out.shape}")
+        # Note: Softmax is typically applied outside the model if using nn.CrossEntropyLoss
+        return out
 
-def build_neural_network_example():
-    """
-    Demonstrates how to build a neural network in PyTorch.
-    """
-    print("\n=== Building Neural Network Example ===")
+def demonstrate_mlp():
+    print("\nSection 4: Multi-Layer Perceptrons (MLPs)")
+    print("-" * 70)
+    print("MLPs consist of an input layer, one or more hidden layers, and an output layer.")
     
-    # Create an instance of the MLP
-    input_size = 784  # e.g., for MNIST images (28x28)
-    hidden_size = 128
-    output_size = 10  # e.g., for 10 digit classes
-    model = MLP(input_size, hidden_size, output_size)
+    input_dim = 100  # Example input feature dimension
+    hidden_dim = 64
+    output_dim = 5   # Example number of classes for classification
     
-    # Print the model architecture
+    model = SimpleMLP(input_dim, hidden_dim, output_dim).to(device)
+    print("\nMLP Architecture:")
     print(model)
     
-    # Count the number of parameters
-    total_params = sum(p.numel() for p in model.parameters())
-    print(f"Total number of parameters: {total_params}")
-    
-    # Example forward pass
-    batch_size = 64
-    x = torch.randn(batch_size, input_size)
-    output = model(x)
-    print(f"Input shape: {x.shape}")
-    print(f"Output shape: {output.shape}")  # Should be [64, 10]
+    # Count parameters
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f"Total trainable parameters in MLP: {total_params}")
 
-def forward_backward_propagation_example():
-    """
-    Demonstrates forward and backward propagation in PyTorch.
-    """
-    print("\n=== Forward and Backward Propagation Example ===")
+    print("\nDemonstrating Forward Propagation through MLP:")
+    batch_size = 4
+    dummy_input = torch.randn(batch_size, input_dim).to(device) # [batch_size, input_features]
+    print(f"Dummy input batch shape: {dummy_input.shape}")
     
-    # Define a simple model
-    class SimpleNN(nn.Module):
+    # Perform a forward pass
+    with torch.no_grad(): # We don't need gradients for this demonstration
+        predictions = model(dummy_input)
+    print(f"MLP output predictions shape: {predictions.shape}") # Expected: [batch_size, num_classes]
+    print("Output from MLP (first sample in batch - raw logits):")
+    print(predictions[0].cpu().numpy())
+
+# -----------------------------------------------------------------------------
+# Section 5: Defining a Neural Network in PyTorch (nn.Module)
+# (Covered by SimpleMLP class definition in Section 4)
+# -----------------------------------------------------------------------------
+
+def recap_nn_module():
+    print("\nSection 5: Defining a Neural Network in PyTorch (`nn.Module`)")
+    print("-" * 70)
+    print("PyTorch networks are built by subclassing `nn.Module`.")
+    print("  - Layers are defined as attributes in `__init__`.")
+    print("  - The `forward` method defines the data flow.")
+    print("  - `SimpleMLP` class (shown above) is an example.")
+
+# -----------------------------------------------------------------------------
+# Section 6: Loss Functions: Measuring Model Error
+# -----------------------------------------------------------------------------
+
+def demonstrate_loss_functions():
+    print("\nSection 6: Loss Functions: Measuring Model Error")
+    print("-" * 70)
+    print("Loss functions quantify the difference between model predictions and true targets.")
+
+    # Mean Squared Error (MSE) - For Regression
+    loss_mse_fn = nn.MSELoss()
+    predictions_reg = torch.tensor([1.0, 2.5, 3.8], device=device) # Model outputs
+    targets_reg = torch.tensor([1.2, 2.3, 4.0], device=device)   # True values
+    mse = loss_mse_fn(predictions_reg, targets_reg)
+    print(f"\nMSE Loss Example (Regression):")
+    print(f"  Predictions: {predictions_reg.cpu().numpy()}")
+    print(f"  Targets: {targets_reg.cpu().numpy()}")
+    print(f"  Calculated MSE Loss: {mse.item():.4f}")
+
+    # Cross-Entropy Loss - For Multi-class Classification
+    loss_ce_fn = nn.CrossEntropyLoss()
+    # Raw logits from the model (batch_size, num_classes)
+    predictions_mc = torch.tensor([[2.0, 0.5, -1.0], [0.1, 1.5, 0.2]], device=device) # 2 samples, 3 classes
+    targets_mc = torch.tensor([0, 1], device=device) # True class indices for each sample
+    ce = loss_ce_fn(predictions_mc, targets_mc)
+    print(f"\nCross-Entropy Loss Example (Multi-class Classification):")
+    print(f"  Predictions (logits):\n{predictions_mc.cpu().numpy()}")
+    print(f"  Targets (class indices): {targets_mc.cpu().numpy()}")
+    print(f"  Calculated Cross-Entropy Loss: {ce.item():.4f}")
+    # Note: nn.CrossEntropyLoss combines LogSoftmax and NLLLoss.
+
+    # Binary Cross-Entropy with Logits Loss - For Binary Classification
+    loss_bce_logits_fn = nn.BCEWithLogitsLoss()
+    # Raw logits for binary classification (batch_size, 1) or (batch_size,)
+    predictions_bc = torch.tensor([-0.5, 1.5, -2.0, 3.0], device=device).unsqueeze(1) # 4 samples, 1 logit each
+    targets_bc = torch.tensor([0.0, 1.0, 0.0, 1.0], device=device).unsqueeze(1)     # True binary labels (0 or 1)
+    bce_wl = loss_bce_logits_fn(predictions_bc, targets_bc)
+    print(f"\nBinary Cross-Entropy with Logits Loss Example (Binary Classification):")
+    print(f"  Predictions (logits):\n{predictions_bc.cpu().numpy()}")
+    print(f"  Targets (0 or 1):\n{targets_bc.cpu().numpy()}")
+    print(f"  Calculated BCEWithLogits Loss: {bce_wl.item():.4f}")
+
+# -----------------------------------------------------------------------------
+# Section 7: Optimizers: How Neural Networks Learn
+# -----------------------------------------------------------------------------
+
+def demonstrate_optimizers():
+    print("\nSection 7: Optimizers: How Neural Networks Learn")
+    print("-" * 70)
+    print("Optimizers adjust model parameters (weights & biases) to minimize the loss function.")
+
+    # Create a dummy model for optimizer demonstration
+    dummy_model = nn.Linear(10, 2).to(device) # 10 input features, 2 output features
+    print(f"Dummy model parameters before optimization (first weight): {dummy_model.weight[0,0].item():.4f}")
+
+    # Stochastic Gradient Descent (SGD)
+    optimizer_sgd = optim.SGD(dummy_model.parameters(), lr=0.01, momentum=0.9)
+    print(f"\nOptimizer: SGD with lr=0.01, momentum=0.9")
+
+    # Adam Optimizer
+    optimizer_adam = optim.Adam(dummy_model.parameters(), lr=0.001)
+    print(f"Optimizer: Adam with lr=0.001")
+
+    # Conceptual optimization step (requires a loss and .backward() call)
+    # Let's simulate a gradient update for SGD
+    # Create dummy input, target, and loss
+    dummy_input_opt = torch.randn(5, 10).to(device)
+    dummy_target_opt = torch.randn(5, 2).to(device)
+    criterion_opt = nn.MSELoss()
+    
+    # --- SGD Example Step ---
+    optimizer_sgd.zero_grad()                   # Clear previous gradients
+    outputs_opt = dummy_model(dummy_input_opt)  # Forward pass
+    loss_opt = criterion_opt(outputs_opt, dummy_target_opt) # Calculate loss
+    loss_opt.backward()                         # Backward pass (compute gradients)
+    optimizer_sgd.step()                        # Update weights
+    print(f"Dummy model parameters after ONE SGD step (first weight): {dummy_model.weight[0,0].item():.4f}")
+    
+    # Reset model parameters for Adam demo (not perfect, but for illustration)
+    dummy_model_adam = nn.Linear(10,2).to(device)
+    optimizer_adam = optim.Adam(dummy_model_adam.parameters(), lr=0.001)
+    print(f"Dummy Adam model parameters before optimization (first weight): {dummy_model_adam.weight[0,0].item():.4f}")
+
+    # --- Adam Example Step ---
+    optimizer_adam.zero_grad()
+    outputs_opt_adam = dummy_model_adam(dummy_input_opt) 
+    loss_opt_adam = criterion_opt(outputs_opt_adam, dummy_target_opt)
+    loss_opt_adam.backward()
+    optimizer_adam.step()
+    print(f"Dummy Adam model parameters after ONE Adam step (first weight): {dummy_model_adam.weight[0,0].item():.4f}")
+    print("Learning rate is a key hyperparameter for optimizers.")
+
+# -----------------------------------------------------------------------------
+# Section 8: The Training Loop: Forward and Backward Propagation
+# (Conceptual, detailed in README and demonstrated in Section 9)
+# -----------------------------------------------------------------------------
+
+def recap_training_loop():
+    print("\nSection 8: The Training Loop: Forward and Backward Propagation")
+    print("-" * 70)
+    print("The training loop is the core of model training:")
+    print("  1. Forward Propagation: Get predictions, calculate loss.")
+    print("  2. optimizer.zero_grad(): Clear old gradients.")
+    print("  3. loss.backward(): Compute current gradients (Backpropagation).")
+    print("  4. optimizer.step(): Update model parameters.")
+    print("  This process is repeated over epochs and batches of data.")
+
+# -----------------------------------------------------------------------------
+# Section 9: Building and Training Your First Neural Network in PyTorch
+# -----------------------------------------------------------------------------
+
+def build_and_train_first_nn():
+    print("\nSection 9: Building and Training Your First Neural Network in PyTorch")
+    print("-" * 70)
+    print("Example: Solving the XOR problem, a non-linearly separable task.")
+
+    # --- Step 1: Prepare the Data ---
+    print("\nStep 1: Prepare the Data (XOR Problem)")
+    # Inputs for XOR: (0,0), (0,1), (1,0), (1,1)
+    X_xor = torch.tensor([[0., 0.], [0., 1.], [1., 0.], [1., 1.]], device=device)
+    # Outputs for XOR: 0, 1, 1, 0
+    y_xor = torch.tensor([[0.], [1.], [1.], [0.]], device=device)
+    
+    # Create a simple Dataset and DataLoader
+    xor_dataset = TensorDataset(X_xor, y_xor)
+    # For XOR, batch_size can be the full dataset size (4) as it's very small.
+    # If we had a larger dataset, we'd use a smaller batch_size (e.g., 32, 64).
+    xor_dataloader = DataLoader(xor_dataset, batch_size=4, shuffle=True)
+    print(f"X_xor inputs:\n{X_xor.cpu().numpy()}")
+    print(f"y_xor targets:\n{y_xor.cpu().numpy()}")
+
+    # --- Step 2: Define the Model ---
+    print("\nStep 2: Define the Model (XORNet)")
+    class XORNet(nn.Module):
         def __init__(self):
-            super(SimpleNN, self).__init__()
-            self.fc1 = nn.Linear(2, 3)
-            self.fc2 = nn.Linear(3, 1)
-            
+            super(XORNet, self).__init__()
+            self.fc1 = nn.Linear(2, 8)      # 2 input features, 8 neurons in hidden layer
+            self.relu = nn.ReLU()
+            self.fc2 = nn.Linear(8, 1)      # 8 hidden neurons, 1 output neuron
+            # Sigmoid will be applied implicitly by BCEWithLogitsLoss or explicitly after if using BCELoss
+
         def forward(self, x):
-            x = torch.relu(self.fc1(x))
+            x = self.fc1(x)
+            x = self.relu(x)
             x = self.fc2(x)
-            return x
-    
-    # Create model, loss function, and optimizer
-    model = SimpleNN()
-    criterion = nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.1)
-    
-    # Input and target
-    x = torch.tensor([[0.5, 0.7], [0.1, 0.9], [0.2, 0.3]], dtype=torch.float32)
-    y = torch.tensor([[1.0], [0.5], [0.7]], dtype=torch.float32)
-    
-    print("Initial predictions:")
-    with torch.no_grad():
-        initial_pred = model(x)
-        print(f"Inputs: {x}")
-        print(f"Targets: {y}")
-        print(f"Predictions: {initial_pred}")
-        initial_loss = criterion(initial_pred, y)
-        print(f"Initial loss: {initial_loss.item():.4f}")
-    
-    # Training loop
-    print("\nTraining:")
-    for epoch in range(100):
-        # Forward pass
-        outputs = model(x)
-        loss = criterion(outputs, y)
-        
-        # Backward pass and optimization
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        
-        if (epoch+1) % 10 == 0:
-            print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
-    
-    # Test the model
-    print("\nFinal predictions:")
-    with torch.no_grad():
-        final_pred = model(x)
-        print(f"Predictions: {final_pred}")
-        final_loss = criterion(final_pred, y)
-        print(f"Final loss: {final_loss.item():.4f}")
-        
-        test_input = torch.tensor([[0.4, 0.6]], dtype=torch.float32)
-        prediction = model(test_input)
-        print(f"Prediction for input {test_input}: {prediction.item():.4f}")
+            return x # Output raw logits
 
-class SyntheticDataset(Dataset):
-    """
-    Synthetic dataset for binary classification.
-    """
-    def __init__(self, num_samples=1000, input_dim=2):
-        self.num_samples = num_samples
-        self.input_dim = input_dim
-        
-        # Generate random data
-        self.data = torch.randn(num_samples, input_dim)
-        
-        # Generate labels: points inside a circle of radius 1 are labeled 1, others 0
-        self.labels = torch.zeros(num_samples)
-        for i in range(num_samples):
-            if torch.norm(self.data[i]) < 1:
-                self.labels[i] = 1
-    
-    def __len__(self):
-        return self.num_samples
-    
-    def __getitem__(self, idx):
-        return self.data[idx], self.labels[idx]
+    xor_model = XORNet().to(device)
+    print("XORNet Architecture:")
+    print(xor_model)
 
-def binary_classification_example():
-    """
-    Demonstrates a complete binary classification example.
-    """
-    print("\n=== Binary Classification Example ===")
+    # --- Step 3: Define Loss Function and Optimizer ---
+    print("\nStep 3: Define Loss Function and Optimizer")
+    criterion = nn.BCEWithLogitsLoss() # Handles sigmoid internally, more stable
+    optimizer = optim.Adam(xor_model.parameters(), lr=0.05) # Adam with a slightly higher LR for faster convergence on XOR
+    print(f"Loss Function: {criterion}")
+    print(f"Optimizer: {optimizer}")
+
+    # --- Step 4: Implement the Training Loop ---
+    print("\nStep 4: Implement the Training Loop")
+    num_epochs = 1000
+    losses_history = []
     
-    # Create synthetic dataset
-    train_dataset = SyntheticDataset(num_samples=1000)
-    test_dataset = SyntheticDataset(num_samples=200)
-    
-    # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    
-    # Define the model
-    class BinaryClassifier(nn.Module):
-        def __init__(self):
-            super(BinaryClassifier, self).__init__()
-            self.fc1 = nn.Linear(2, 10)
-            self.fc2 = nn.Linear(10, 10)
-            self.fc3 = nn.Linear(10, 1)
-            
-        def forward(self, x):
-            x = F.relu(self.fc1(x))
-            x = F.relu(self.fc2(x))
-            x = torch.sigmoid(self.fc3(x))
-            return x
-    
-    # Create model, loss function, and optimizer
-    model = BinaryClassifier()
-    criterion = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
-    
-    # Training loop
-    num_epochs = 10
     for epoch in range(num_epochs):
-        model.train()
-        running_loss = 0.0
-        for i, (inputs, labels) in enumerate(train_loader):
+        for inputs, labels in xor_dataloader: # Dataloader handles batching
+            # Inputs and labels are already on `device` if X_xor, y_xor were created on device
+            
             # Forward pass
-            outputs = model(inputs).squeeze()
+            outputs = xor_model(inputs) # Model outputs raw logits
             loss = criterion(outputs, labels)
             
-            # Backward pass and optimization
+            # Backward and optimize
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            
-            running_loss += loss.item()
         
-        # Print statistics
-        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader):.4f}")
-    
-    # Evaluate the model
-    model.eval()
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for inputs, labels in test_loader:
-            outputs = model(inputs).squeeze()
-            predicted = (outputs > 0.5).float()
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-    
-    accuracy = 100 * correct / total
-    print(f"Accuracy on test set: {accuracy:.2f}%")
-    
-    # Visualize the decision boundary
-    plt.figure(figsize=(10, 8))
-    
-    # Plot the test data
-    x_data = test_dataset.data.numpy()
-    y_data = test_dataset.labels.numpy()
-    
-    plt.scatter(x_data[y_data==0, 0], x_data[y_data==0, 1], c='red', label='Class 0')
-    plt.scatter(x_data[y_data==1, 0], x_data[y_data==1, 1], c='blue', label='Class 1')
-    
-    # Create a grid to evaluate the model
-    x_min, x_max = x_data[:, 0].min() - 1, x_data[:, 0].max() + 1
-    y_min, y_max = x_data[:, 1].min() - 1, x_data[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
-                         np.arange(y_min, y_max, 0.01))
-    
-    # Evaluate the model on the grid
-    model.eval()
-    with torch.no_grad():
-        grid = torch.tensor(np.c_[xx.ravel(), yy.ravel()], dtype=torch.float32)
-        outputs = model(grid).squeeze().numpy()
-        outputs = outputs.reshape(xx.shape)
-    
-    # Plot the decision boundary
-    plt.contourf(xx, yy, outputs, alpha=0.3, levels=np.linspace(0, 1, 11))
-    plt.colorbar()
-    plt.contour(xx, yy, outputs, colors='black', levels=[0.5])
-    plt.title('Decision Boundary')
-    plt.xlabel('Feature 1')
-    plt.ylabel('Feature 2')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig('decision_boundary.png')
-    print("Decision boundary visualization saved as 'decision_boundary.png'")
+        losses_history.append(loss.item())
+        if (epoch + 1) % 100 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
-def mnist_example():
-    """
-    Demonstrates a complete example of training a neural network on MNIST.
-    """
-    print("\n=== MNIST Classification Example ===")
-    
-    # Check if CUDA is available
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
-    
-    # Hyperparameters
-    input_size = 784  # 28x28
-    hidden_size = 500
-    num_classes = 10
-    num_epochs = 2  # Reduced for demonstration
-    batch_size = 100
-    learning_rate = 0.001
-    
-    # Create data directory if it doesn't exist
-    os.makedirs('./data', exist_ok=True)
-    
-    try:
-        # MNIST dataset
-        train_dataset = torchvision.datasets.MNIST(root='./data', 
-                                                train=True, 
-                                                transform=transforms.ToTensor(),
-                                                download=True)
+    # Plot training loss
+    plt.figure(figsize=(10, 6))
+    plt.plot(losses_history)
+    plt.title('Training Loss for XOR Problem')
+    plt.xlabel('Epoch')
+    plt.ylabel('BCEWithLogitsLoss')
+    plt.grid(True)
+    loss_plot_path = os.path.join(output_dir, 'xor_training_loss.png')
+    plt.savefig(loss_plot_path)
+    plt.close()
+    print(f"Training loss plot saved to '{loss_plot_path}'")
+
+    # --- Step 5: Evaluate the Model (Conceptual) ---
+    print("\nStep 5: Evaluate the Model")
+    xor_model.eval() # Set model to evaluation mode (important for layers like dropout, batchnorm)
+    with torch.no_grad(): # Disable gradient calculations for inference
+        test_predictions_logits = xor_model(X_xor)
+        # Apply sigmoid to logits to get probabilities for evaluation
+        test_predictions_probs = torch.sigmoid(test_predictions_logits)
+        # Convert probabilities to binary classes (0 or 1) based on a 0.5 threshold
+        predicted_classes = (test_predictions_probs >= 0.5).float()
         
-        test_dataset = torchvision.datasets.MNIST(root='./data', 
-                                                train=False, 
-                                                transform=transforms.ToTensor())
-        
-        # Data loader
-        train_loader = DataLoader(dataset=train_dataset, 
-                                batch_size=batch_size, 
-                                shuffle=True)
-        
-        test_loader = DataLoader(dataset=test_dataset, 
-                                batch_size=batch_size, 
-                                shuffle=False)
-        
-        # Fully connected neural network
-        class NeuralNet(nn.Module):
-            def __init__(self, input_size, hidden_size, num_classes):
-                super(NeuralNet, self).__init__()
-                self.fc1 = nn.Linear(input_size, hidden_size) 
-                self.relu = nn.ReLU()
-                self.fc2 = nn.Linear(hidden_size, num_classes)  
-            
-            def forward(self, x):
-                out = self.fc1(x)
-                out = self.relu(out)
-                out = self.fc2(out)
-                return out
-        
-        model = NeuralNet(input_size, hidden_size, num_classes).to(device)
-        
-        # Loss and optimizer
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-        
-        # Train the model
-        total_step = len(train_loader)
-        for epoch in range(num_epochs):
-            for i, (images, labels) in enumerate(train_loader):
-                # Reshape images to (batch_size, input_size)
-                images = images.reshape(-1, input_size).to(device)
-                labels = labels.to(device)
-                
-                # Forward pass
-                outputs = model(images)
-                loss = criterion(outputs, labels)
-                
-                # Backward and optimize
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                
-                if (i+1) % 100 == 0:
-                    print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Loss: {loss.item():.4f}')
-        
-        # Test the model
-        model.eval()
-        with torch.no_grad():
-            correct = 0
-            total = 0
-            for images, labels in test_loader:
-                images = images.reshape(-1, input_size).to(device)
-                labels = labels.to(device)
-                outputs = model(images)
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels).sum().item()
-        
-            print(f'Accuracy of the network on the 10000 test images: {100 * correct / total}%')
-        
-        # Visualize some predictions
-        dataiter = iter(test_loader)
-        images, labels = next(dataiter)
-        
-        # Get predictions
-        images_flat = images.reshape(-1, input_size).to(device)
-        outputs = model(images_flat)
-        _, predicted = torch.max(outputs, 1)
-        
-        # Plot the images and predictions
-        plt.figure(figsize=(12, 8))
-        for i in range(min(25, batch_size)):
-            plt.subplot(5, 5, i+1)
-            plt.imshow(images[i].squeeze().numpy(), cmap='gray')
-            plt.title(f'Pred: {predicted[i].item()}, True: {labels[i].item()}')
-            plt.axis('off')
-        
-        plt.tight_layout()
-        plt.savefig('mnist_predictions.png')
-        print("MNIST predictions visualization saved as 'mnist_predictions.png'")
-    
-    except Exception as e:
-        print(f"Error in MNIST example: {e}")
-        print("Skipping MNIST example due to error.")
+        accuracy = (predicted_classes == y_xor).float().mean()
+        print(f"\nFinal Accuracy on XOR dataset: {accuracy.item()*100:.2f}%")
+        print("Input  | True Output | Predicted Prob | Predicted Class")
+        print("-----------------------------------------------------")
+        for i in range(len(X_xor)):
+            print(f"{X_xor[i].cpu().numpy()} | {y_xor[i].item():.0f}           | {test_predictions_probs[i].item():.4f}         | {predicted_classes[i].item():.0f}")
+    xor_model.train() # Set model back to training mode if further training is planned
+
+# -----------------------------------------------------------------------------
+# Main function to run all sections
+# -----------------------------------------------------------------------------
 
 def main():
-    """
-    Main function to run all examples.
-    """
-    print("PyTorch Neural Networks Fundamentals")
-    print(f"PyTorch version: {torch.__version__}")
+    """Main function to run all neural networks fundamentals tutorial sections."""
+    print("=" * 80)
+    print("PyTorch Neural Networks Fundamentals Tutorial")
+    print("=" * 80)
     
-    # Run examples
-    linear_layer_example()
-    activation_functions_example()
-    loss_functions_example()
-    optimizers_example()
-    build_neural_network_example()
-    forward_backward_propagation_example()
-    binary_classification_example()
+    intro_to_neural_networks_concepts()
+    demonstrate_perceptron_concept()
+    demonstrate_activation_functions()
+    demonstrate_mlp()
+    recap_nn_module()
+    demonstrate_loss_functions()
+    demonstrate_optimizers()
+    recap_training_loop()
+    build_and_train_first_nn()
     
-    # MNIST example is optional as it requires downloading the dataset
-    try:
-        mnist_example()
-    except Exception as e:
-        print(f"Error in MNIST example: {e}")
-        print("Skipping MNIST example. You can run it separately if needed.")
-    
-    print("\nAll examples completed!")
+    print("\nTutorial complete! Outputs (like plots) are in the '02_neural_networks_fundamentals_outputs' directory.")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

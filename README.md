@@ -1,135 +1,8 @@
 # PyTorch Tutorials
 
-A comprehensive collection of tutorials covering PyTorch from beginner to expert level. This repository aims to provide practical, hands-on examples and explanations for various PyTorch concepts and applications.
+A comprehensive collection of PyTorch tutorials from beginner to advanced level. Each tutorial includes both Python scripts and interactive Jupyter notebooks for hands-on learning.
 
-## Table of Contents
-
-### Beginner Level
-1. [PyTorch Basics](01_pytorch_basics/README.md)
-   - Tensors, operations, NumPy integration, GPU acceleration, computational graphs
-   
-2. Neural Networks Fundamentals
-   - Linear layers, activation functions, loss functions, optimizers
-   - Building your first neural network
-   - Forward and backward propagation
-
-3. Automatic Differentiation
-   - Autograd mechanics
-   - Computing gradients
-   - Custom autograd functions
-
-4. Training Neural Networks
-   - Training loop implementation
-   - Validation techniques
-   - Hyperparameter tuning
-   - Learning rate scheduling
-
-5. Data Loading and Preprocessing
-   - Dataset and DataLoader classes
-   - Custom datasets
-   - Data transformations and augmentation
-   - Efficient data loading techniques
-
-### Intermediate Level
-6. Convolutional Neural Networks
-   - CNN architecture components
-   - Image classification with CNNs
-   - Transfer learning with pre-trained models
-   - Feature visualization
-
-7. Recurrent Neural Networks
-   - RNN, LSTM, and GRU implementations
-   - Sequence modeling
-   - Text generation
-   - Time series forecasting
-
-8. Transformers and Attention Mechanisms
-   - Self-attention and multi-head attention
-   - Transformer architecture
-   - BERT and GPT model implementations
-   - Fine-tuning pre-trained transformers
-
-9. Generative Models
-   - Autoencoders
-   - Variational Autoencoders (VAEs)
-   - Generative Adversarial Networks (GANs)
-   - Diffusion models
-
-10. Model Deployment
-    - TorchScript and tracing
-    - ONNX export
-    - Quantization
-    - Mobile deployment (PyTorch Mobile)
-    - Web deployment (ONNX.js)
-
-11. PyTorch Lightning
-    - Lightning modules
-    - Trainers and callbacks
-    - Multi-GPU training
-    - Experiment logging
-
-### Advanced Level
-12. Distributed Training
-    - Data parallelism
-    - Model parallelism
-    - Distributed Data Parallel (DDP)
-    - Sharded training
-
-13. Custom Extensions
-    - C++ extensions
-    - CUDA extensions
-    - Custom operators
-    - JIT compilation
-
-14. Performance Optimization
-    - Memory optimization
-    - Mixed precision training
-    - Profiling and benchmarking
-    - Bottleneck identification
-
-15. Advanced Model Architectures
-    - Graph Neural Networks
-    - Vision Transformers
-    - MLP-Mixers
-    - Neural ODEs
-
-16. Reinforcement Learning
-    - Policy gradients
-    - Deep Q-Networks
-    - Actor-Critic methods
-    - PPO implementation
-
-17. Meta-Learning and Few-Shot Learning
-    - MAML implementation
-    - Prototypical networks
-    - Metric-based approaches
-    - Meta-optimization
-
-### Expert Level
-18. Neural Architecture Search
-    - Differentiable architecture search
-    - Evolutionary algorithms
-    - Reinforcement learning for architecture search
-    - Weight sharing techniques
-
-19. Bayesian Deep Learning
-    - Bayesian Neural Networks
-    - Variational inference
-    - Monte Carlo Dropout
-    - Uncertainty estimation
-
-20. Advanced Research Topics
-    - Self-supervised learning
-    - Contrastive learning
-    - Energy-based models
-    - Implicit neural representations
-
-## Getting Started
-
-### Prerequisites
-- Python 3.7+
-- PyTorch 1.10+
-- Additional requirements are listed in `requirements.txt`
+## 🚀 Quick Start
 
 ### Installation
 ```bash
@@ -138,8 +11,52 @@ cd pytorch-tutorials
 pip install -r requirements.txt
 ```
 
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Running the Tutorials
+```bash
+# Run Python scripts directly
+python 01_pytorch_basics/pytorch_basics.py
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+# Or use Jupyter notebooks for interactive learning
+jupyter notebook
+# Then navigate to any tutorial folder and open the .ipynb file
+```
+
+## 📚 Tutorials
+
+### **Fundamentals**
+1. **[PyTorch Basics](01_pytorch_basics/)** - Tensors, operations, GPU acceleration, computational graphs
+2. **[Neural Networks Fundamentals](02_neural_networks_fundamentals/)** - Building your first neural network, activation functions, optimizers
+3. **[Automatic Differentiation](03_automatic_differentiation/)** - Autograd mechanics, computing gradients, custom functions
+4. **[Training Neural Networks](04_training_neural_networks/)** - Training loops, validation, hyperparameter tuning
+5. **[Data Loading and Preprocessing](05_data_loading_preprocessing/)** - Datasets, DataLoaders, transformations
+
+### **Core Architectures**
+6. **[Convolutional Neural Networks](06_convolutional_neural_networks/)** - CNNs, image classification, transfer learning
+7. **[Recurrent Neural Networks](07_recurrent_neural_networks/)** - RNNs, LSTMs, GRUs, sequence modeling
+8. **[Transformers and Attention](08_transformers_and_attention_mechanisms/)** - Self-attention, transformer architecture
+
+### **Advanced Topics**
+9. **[Generative Models](09_generative_models/)** - Autoencoders, VAEs, GANs
+10. **[Model Deployment](10_model_deployment/)** - TorchScript, ONNX, quantization
+11. **[PyTorch Lightning](11_pytorch_lightning/)** - Lightning modules, distributed training
+
+## 📋 Each Tutorial Includes
+
+- **📖 README.md** - Detailed theory and concepts
+- **🐍 Python Script** - Complete runnable code
+- **📓 Jupyter Notebook** - Interactive step-by-step learning
+
+## 🛠️ Requirements
+
+- Python 3.8+
+- PyTorch 2.0+
+- Jupyter Notebook
+- See `requirements.txt` for full dependencies
+
+## 📖 How to Use
+
+1. **Start with the README** in each folder for theory
+2. **Run the Python script** to see the complete implementation
+3. **Open the Jupyter notebook** for interactive learning and experimentation
+
+Perfect for both beginners starting their PyTorch journey and practitioners looking to deepen their understanding!
